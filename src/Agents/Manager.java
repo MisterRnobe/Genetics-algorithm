@@ -15,12 +15,11 @@ public class Manager {
             instance = new Manager();
         return instance;
     }
-    public int foodCount = 20;
-
+    private int foodCount = 20;
     private List<Food> foods;
-    private List<Agent> agents;
-    private LinkedList<Agent> died;
-    int iteration = 0;
+    private List<AgentCell> agents;
+    private LinkedList<AgentCell> died;
+    private int iteration = 0;
     private Manager()
     {
         foods = new ArrayList<>();
@@ -29,7 +28,7 @@ public class Manager {
 
         Random r = new Random();
         for (int i = 0; i < 12; i++) {
-            Agent a = new Agent(r.nextInt(1024), r.nextInt(1024), new Controller(2,6,1));
+            AgentCell a = new AgentCell(r.nextInt(1024), r.nextInt(1024), new Controller(2,6,1));
             agents.add(a);
         }
         for (int i = 0; i < foodCount; i++) {
@@ -38,9 +37,9 @@ public class Manager {
     }
     public void nextStep()
     {
-        for(Iterator<Agent> iterator = agents.iterator(); iterator.hasNext();)
+        for(Iterator<AgentCell> iterator = agents.iterator(); iterator.hasNext();)
         {
-            Agent a = iterator.next();
+            AgentCell a = iterator.next();
             checkIntersection(a);
             Food f = findClosest(a);
             double[] d = a.apply(f.x, f.y);
@@ -55,11 +54,11 @@ public class Manager {
                 iterator.remove();
             }
         }
-        iteration = iteration == 4? iteration = 0: iteration+1;
+        iteration = iteration == 4? 0: iteration+1;
         if (agents.isEmpty())
             generateAgents();
     }
-    private void checkIntersection(Agent a)
+    private void checkIntersection(AgentCell a)
     {
             Iterator<Food> iterator = foods.iterator();
             for(;iterator.hasNext();)
@@ -72,7 +71,7 @@ public class Manager {
                 }
             }
     }
-    private Food findClosest(Agent a)
+    private Food findClosest(AgentCell a)
     {
         Food food = foods.get(0);
         double distance = sqrt((a.x-food.x)*(a.x-food.x) + (a.y-food.y)*(a.y-food.y));
@@ -93,17 +92,17 @@ public class Manager {
     private void generateAgents()
     {
         Random r = new Random();
-        Agent[] agentsArray = new Agent[4];
+        AgentCell[] agentsArray = new AgentCell[4];
         for (int i = 0; i < agentsArray.length; i++) {
             agentsArray[i] = died.removeLast();
         }
         died.clear();
         for (int i = 0; i < agentsArray.length; i++) {
             for (int j = 0; j < 8;j++) {
-                Agent oldAgent = agentsArray[i];
+                AgentCell oldAgent = agentsArray[i];
                 Controller c = oldAgent.getController();
                 c.mutate(8);
-                Agent newAgent = new Agent(r.nextInt(1024), r.nextInt(1024), c);
+                AgentCell newAgent = new AgentCell(r.nextInt(1024), r.nextInt(1024), c);
                 agents.add(newAgent);
             }
         }

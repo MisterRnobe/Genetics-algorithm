@@ -1,10 +1,14 @@
 package Agents;
 
+import Agents.geneticstuff.Agent;
+import Agents.geneticstuff.Genome;
+
 import java.awt.*;
 
 import static java.lang.Math.*;
 
-public class Agent extends Entity{
+public class AgentCell extends Entity implements Agent
+{
     private static final int MAX_HP = 255;
     private static final double MAX_DEGREE = PI/6;
     private static final double VELOCITY = 10;
@@ -13,8 +17,12 @@ public class Agent extends Entity{
     private static final int RADIUS = 12;
     private final Controller controller;
     private double angle = 0;
-    
-    protected Agent(int x, int y, Controller controller) {
+
+    protected Double FitnessFunction()
+    {
+        return 0.0;
+    }
+    protected AgentCell(int x, int y, Controller controller) {
         super(x, y);
         currentHP = 20;
         this.controller = controller;
@@ -74,5 +82,19 @@ public class Agent extends Entity{
         if (y < 0)
             val = 2*PI - val;
         return Math.toDegrees(val);
+    }
+
+    @Override
+    public String fitnessFunction()
+    {
+        //Todo Implement this stuff with number of iterations
+        return null;
+    }
+
+    @Override
+    public Genome getGenome()
+    {
+        //todo implement this with weights from neural network
+        return null;
     }
 }
