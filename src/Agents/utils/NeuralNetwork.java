@@ -39,10 +39,10 @@ public class NeuralNetwork {
         double[][][] thetas = new double[this.thetas.length][][];
         Arrays.setAll(thetas, i-> this.thetas[i].toArray());
         ArrayList<Double> arrayList = new ArrayList<>();
-        for (int i = 0; i < thetas.length; i++) {
-            for (int j = 0; j < thetas[i].length; j++) {
-                for (int k = 0; k < thetas[i][j].length; k++) {
-                    arrayList.add(thetas[i][j][k]);
+        for (double[][] theta : thetas) {
+            for (double[] aTheta : theta) {
+                for (double anATheta : aTheta) {
+                    arrayList.add(anATheta);
                 }
             }
         }
@@ -65,14 +65,17 @@ public class NeuralNetwork {
             m = (DenseMatrix) theta.multiply(m);
             m.update((i, j, v) -> function.apply(v));
         }
-        return m.toArray()[0];
+        double[] result = new double[m.rows()];
+        int i = 0;
+        for (Double aM : m) {
+            result[i++] = aM;
+        }
+        return result;
     }
     public NeuralNetwork clone()
     {
         double[][][] thetasArray = new double[thetas.length][][];
-        for (int i = 0; i < thetas.length; i++) {
-            thetasArray[i] = thetas[i].toArray();
-        }
+        Arrays.setAll(thetasArray, i->thetas[i].toArray());
         return new NeuralNetwork(thetasArray);
     }
 
