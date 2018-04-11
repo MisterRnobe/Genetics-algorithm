@@ -2,6 +2,7 @@ package Agents;
 
 import Agents.geneticstuff.Agent;
 import Agents.geneticstuff.Genome;
+import Agents.utils.NeuralNetwork;
 
 import java.awt.*;
 
@@ -15,17 +16,18 @@ public class AgentCell extends Entity implements Agent
 
     private int currentHP;
     private static final int RADIUS = 12;
-    private final Controller controller;
+    private final NeuralNetwork neuralNetwork;
     private double angle = 0;
 
     protected Double FitnessFunction()
     {
         return 0.0;
     }
-    protected AgentCell(int x, int y, Controller controller) {
+    protected AgentCell(int x, int y, NeuralNetwork neuralNetwork) {
         super(x, y);
         currentHP = 20;
-        this.controller = controller;
+        this.neuralNetwork = neuralNetwork;
+        neuralNetwork.setFunction(d-> 2d/(1+Math.exp(-d))-1);
     }
 
     @Override
@@ -41,7 +43,7 @@ public class AgentCell extends Entity implements Agent
     {
         double angle = angle(x,y);
         double distance = sqrt(x*x+y*y);
-        return controller.apply(angle - this.angle, distance);
+        return neuralNetwork.apply(angle - this.angle, distance);
     }
     public void rotate(double value)
     {
@@ -71,8 +73,8 @@ public class AgentCell extends Entity implements Agent
         return d < RADIUS + f.getRadius();
     }
 
-    public Controller getController() {
-        return controller;
+    public NeuralNetwork getController() {
+        return neuralNetwork;
     }
 
     public static final double angle(double x, double y)

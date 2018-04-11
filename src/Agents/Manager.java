@@ -1,7 +1,6 @@
 package Agents;
 
-import Life.Map;
-import Life.Robot;
+import Agents.utils.NeuralNetwork;
 
 import java.util.*;
 
@@ -28,7 +27,7 @@ public class Manager {
 
         Random r = new Random();
         for (int i = 0; i < 12; i++) {
-            AgentCell a = new AgentCell(r.nextInt(1024), r.nextInt(1024), new Controller(2,6,1));
+            AgentCell a = new AgentCell(r.nextInt(1024), r.nextInt(1024), new NeuralNetwork(2,6,1));
             agents.add(a);
         }
         for (int i = 0; i < foodCount; i++) {
@@ -100,8 +99,7 @@ public class Manager {
         for (int i = 0; i < agentsArray.length; i++) {
             for (int j = 0; j < 8;j++) {
                 AgentCell oldAgent = agentsArray[i];
-                Controller c = oldAgent.getController();
-                c.mutate(8);
+                NeuralNetwork c = oldAgent.getController();
                 AgentCell newAgent = new AgentCell(r.nextInt(1024), r.nextInt(1024), c);
                 agents.add(newAgent);
             }
