@@ -1,9 +1,6 @@
 package Agents.geneticstuff;
 
-import io.jenetics.DoubleChromosome;
-import io.jenetics.DoubleGene;
-import io.jenetics.Genotype;
-import io.jenetics.Phenotype;
+import io.jenetics.*;
 import io.jenetics.engine.*;
 import io.jenetics.internal.collection.ArrayISeq;
 import io.jenetics.internal.collection.ArraySeq;
@@ -23,8 +20,8 @@ public class Test
     private static final int N = 2;
     private  static Double fitnessFunc(Genotype<DoubleGene> genotype)
     {
-        return A*N + genotype.stream().map(doubleGenes -> doubleGenes.getGene().getAllele())
-                .mapToDouble(Test::rastrFunc).sum();
+        return rastrFunc(genotype.getChromosome().getGene().getAllele());//genotype.stream().map(doubleGenes -> doubleGenes.getGene().getAllele())
+                //.mapToDouble(Test::rastrFunc).sum();
     }
     private static double rastrFunc(double x)
     {
@@ -33,17 +30,17 @@ public class Test
     public static void main(String[] args)
     {
         Factory<Genotype<DoubleGene>> factory = Genotype.of(
-                DoubleChromosome.of(-R,R,N),
-                DoubleChromosome.of(-R,R,N)
+                DoubleChromosome.of(-R,R,1)
         );
         Phenotype.of(factory.newInstance(),1,Test::fitnessFunc);
-        Engine engine = Engine.builder(Test::fitnessFunc,factory).build();
+        Engine engine = Engine.builder(Test::fitnessFunc,factory).optimize(Optimize.MINIMUM).build();
         EvolutionStart<DoubleGene,Double> start = EvolutionStart.of(createPopulation(20,factory),1); //TODO inititalize
-        for(int i = 0; i < 1000; i++)
+        for(int i = 0; i < 50000; i++)
         {
             //TODO simulation
             start = engine.evolve(start).toEvolutionStart();
         }
+        start.getPopulation().forEach(System.out::println);
 
     }
     private static ISeq<Phenotype<DoubleGene,Double>> createPopulation(int quantity,Factory<Genotype<DoubleGene>> factory)
