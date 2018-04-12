@@ -30,7 +30,7 @@ public class GeneticAlgorithm
                 DoubleChromosome.of(-1,1,1)
         );
         Phenotype.of(factory.newInstance(),1,GeneticAlgorithm::fitnessFunc);
-        Engine engine = Engine.builder(GeneticAlgorithm::fitnessFunc,factory).optimize(Optimize.MINIMUM).build();
+        Engine<DoubleGene,Double> engine = Engine.builder(GeneticAlgorithm::fitnessFunc,factory).optimize(Optimize.MINIMUM).build();
         EvolutionStart<DoubleGene,Double> start = EvolutionStart.of(createPopulation(20,factory),1); //TODO inititalize
         for(int i = 0; i < 50000; i++)
         {
