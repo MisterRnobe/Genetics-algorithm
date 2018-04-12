@@ -1,7 +1,6 @@
 package Agents.ui;
 
-import Agents.Entity;
-import Agents.Manager;
+import Agents.Simulation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,8 +27,8 @@ public class Panel extends JPanel {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        Manager.getInstance().nextStep();
-        Manager.getInstance().getEntities().forEach(e->e.draw(g));
+        Simulation.getInstance().nextStep();
+        Simulation.getInstance().getEntities().forEach(e->e.draw(g));
 
     }
 }

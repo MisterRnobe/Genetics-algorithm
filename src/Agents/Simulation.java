@@ -6,12 +6,13 @@ import java.util.*;
 
 import static java.lang.Math.sqrt;
 
-public class Manager {
-    private static Manager instance;
-    public static Manager getInstance()
+public class Simulation
+{
+    private static Simulation instance;
+    public static Simulation getInstance()
     {
         if (instance == null)
-            instance = new Manager();
+            instance = new Simulation();
         return instance;
     }
     private int foodCount = 20;
@@ -19,7 +20,7 @@ public class Manager {
     private List<AgentCell> agents;
     private LinkedList<AgentCell> died;
     private int iteration = 0;
-    private Manager()
+    private Simulation()
     {
         foods = new ArrayList<>();
         agents = new ArrayList<>();
