@@ -1,14 +1,15 @@
 package Agents;
 
-import Agents.geneticstuff.Agent;
-import Agents.geneticstuff.Genome;
+//import Agents.geneticstuff.Agent;
+//import Agents.geneticstuff.Genome;
 import Agents.utils.NeuralNetwork;
+import Agents.utils.Vector2;
 
 import java.awt.*;
 
 import static java.lang.Math.*;
 
-public class AgentCell extends Entity implements Agent
+public class AgentCell extends Entity //implements Agent
 {
     private static final int MAX_HP = 255;
     private static final double MAX_DEGREE = PI/6;
@@ -43,7 +44,7 @@ public class AgentCell extends Entity implements Agent
     {
         double angle = angle(x,y);
         double distance = sqrt(x*x+y*y);
-        return neuralNetwork.apply(angle - this.angle, distance);
+        return neuralNetwork.apply(angle, distance);
     }
     public void rotate(double value)
     {
@@ -77,26 +78,24 @@ public class AgentCell extends Entity implements Agent
         return neuralNetwork;
     }
 
-    public static final double angle(double x, double y)
+    private double angle(double x, double y)
     {
-        double d = sqrt(x*x + y*y);
-        double val = acos(x/d);
-        if (y < 0)
-            val = 2*PI - val;
-        return Math.toDegrees(val);
+        Vector2 rotation = new Vector2(cos(angle), sin(angle));
+        Vector2 position = new Vector2(x - this.x, y - this.y);
+        return rotation.angle(position);
     }
 
-    @Override
-    public String fitnessFunction()
-    {
-        //Todo Implement this stuff with number of iterations
-        return null;
-    }
-
-    @Override
-    public Genome getGenome()
-    {
-        //todo implement this with weights from neural network
-        return null;
-    }
+//    @Override
+//    public String fitnessFunction()
+//    {
+//        //Todo Implement this stuff with number of iterations
+//        return null;
+//    }
+//
+//    @Override
+//    public Genome getGenome()
+//    {
+//        //todo implement this with weights from neural network
+//        return null;
+//    }
 }

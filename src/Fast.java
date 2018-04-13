@@ -1,20 +1,14 @@
 import Agents.utils.NeuralNetwork;
+import Agents.utils.Vector2;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class Fast {
     public static void main(String[] args) {
-        NeuralNetwork n = new NeuralNetwork(new double[]{1,2,3,4,5,6,7,8,9,10}, 1, 2 ,2);
-        double[] arr = n.getThetas();
-        System.out.println(toString(arr));
-        arr = n.getThetas(0);
-        System.out.println("Theta 0: " + toString(arr));
-        arr = n.getThetas(1);
-        System.out.println("Theta 1: " + toString(arr));
-        arr = n.apply(-10000);
-        System.out.println("Result = " + toString(arr) + " length = " + arr.length);
-        Double d = 2.0;
+        Vector2 vec1 = new Vector2(1,1);
+        Vector2 vec2 = new Vector2(1, 0);
+        System.out.println(vec1.angle(vec2));
     }
     public static double[] getThetas()
     {
