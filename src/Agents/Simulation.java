@@ -1,6 +1,8 @@
 package Agents;
 
 import Agents.utils.NeuralNetwork;
+import io.jenetics.DoubleGene;
+import io.jenetics.Genotype;
 
 import java.util.*;
 
@@ -16,6 +18,7 @@ public class Simulation
         return instance;
     }
     private int foodCount = 20;
+    private Map<double[],AgentCell> agentMap;
     private List<Food> foods;
     private List<AgentCell> agents;
     private LinkedList<AgentCell> died;
@@ -25,6 +28,7 @@ public class Simulation
         foods = new ArrayList<>();
         agents = new ArrayList<>();
         died = new LinkedList<>();
+        agentMap = new HashMap<>();
 
         Random r = new Random();
         for (int i = 0; i < 12; i++) {
@@ -34,6 +38,17 @@ public class Simulation
         for (int i = 0; i < foodCount; i++) {
             addFood();
         }
+    }
+    public void addAgent(double[] genotype, int... neurons)
+    {
+        Random r = new Random();
+        agentMap.put(genotype,
+                new AgentCell(
+                        r.nextInt(1024),
+                        r.nextInt(1024),
+                        new NeuralNetwork(genotype,neurons)
+                )
+        );
     }
     public void nextStep()
     {
