@@ -1,6 +1,5 @@
 package Agents;
 
-import Agents.utils.NeuralNetwork;
 import io.jenetics.*;
 import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionResult;
@@ -19,7 +18,6 @@ public class GeneticAlgorithm
     public static int generationsLimit = 10;
     private  static Double fitnessFunc(Genotype<DoubleGene> genotype)
     {
-
         return Simulation.getInstance().getAgent(genotypeToDouble(genotype)).fitnessFunction();
     }
     private static double[] genotypeToDouble(Genotype<DoubleGene> genotype)
@@ -45,7 +43,7 @@ public class GeneticAlgorithm
                     .map(Phenotype::getGenotype)
                     .map(GeneticAlgorithm::genotypeToDouble)
                     .forEach(geneArray->Simulation.getInstance().addAgent(geneArray,neurons));
-            Simulation.getInstance().startSimulation();
+            Simulation.getInstance().doSimulation(i);
             EvolutionResult<DoubleGene,Double> result = engine.evolve(start);
             start = result.toEvolutionStart();
 

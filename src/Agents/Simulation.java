@@ -1,10 +1,12 @@
 package Agents;
 
+import Agents.ui.Frame;
 import Agents.utils.NeuralNetwork;
 import io.jenetics.DoubleGene;
 import io.jenetics.Genotype;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 import static java.lang.Math.sqrt;
 import static java.util.stream.Collectors.toList;
@@ -23,6 +25,8 @@ public class Simulation
     private List<Food> foods;
 
     private int iteration = 0;
+    private final Predicate<Integer> doDrawSimulation = i-> i == 0;
+
     private Simulation()
     {
         foods = new ArrayList<>();
@@ -31,12 +35,37 @@ public class Simulation
             addFood();
         }
     }
-    public void startSimulation()
+    public void doSimulation(int someNumber)
+    {
+        if (doDrawSimulation.test(someNumber))
+            drawSimulation();
+        else
+            simpleSimulation();
+    }
+    public void simpleSimulation()
     {
         int alive = agentMap.size();
         while (alive!=0)
         {
             alive = nextStep();
+        }
+    }
+    public void drawSimulation()
+    {
+        int alive = agentMap.size();
+        Frame f = new Frame();
+        while (alive!=0)
+        {
+            f.repaint();
+            alive = nextStep();
+            try
+            {
+                Thread.sleep(50);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
     public void addAgent(double[] genotype, int... neurons)
@@ -65,10 +94,10 @@ public class Simulation
             double[] d = a.apply(f.x, f.y);
             a.rotate(d[0]);
             a.move();
-            if (iteration == 4)
+            if (iteration == 2)
                 a.addHP(-1);
         }
-        if (iteration == 4)
+        if (iteration == 2)
             iteration = 0;
         else
             iteration++;
