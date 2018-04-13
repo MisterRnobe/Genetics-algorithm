@@ -16,7 +16,7 @@ public class GeneticAlgorithm
 {
     public static int min = -10;
     public static int max = 10;
-    public static int generationsLimit = 5000;
+    public static int generationsLimit = 10;
     private  static Double fitnessFunc(Genotype<DoubleGene> genotype)
     {
 
@@ -45,7 +45,7 @@ public class GeneticAlgorithm
                     .map(Phenotype::getGenotype)
                     .map(GeneticAlgorithm::genotypeToDouble)
                     .forEach(geneArray->Simulation.getInstance().addAgent(geneArray,neurons));
-            //TODO simulation
+            Simulation.getInstance().startSimulation();
             EvolutionResult<DoubleGene,Double> result = engine.evolve(start);
             start = result.toEvolutionStart();
 
@@ -76,9 +76,10 @@ public class GeneticAlgorithm
     }
     public static void main(String[] args)
     {
-        NeuralNetwork nn = new NeuralNetwork(genotypeToDouble(getFactory(2,2,2).newInstance()),2,2,2);
-        System.out.println(toString(nn.getThetas(0)));
-        System.out.println(toString(nn.getThetas(1  )));
+        doEngine(100, 2, 6, 1);
+//        NeuralNetwork nn = new NeuralNetwork(genotypeToDouble(getFactory(2,2,2).newInstance()),2,2,2);
+//        System.out.println(toString(nn.getThetas(0)));
+//        System.out.println(toString(nn.getThetas(1  )));
     }
     private static ISeq<Phenotype<DoubleGene,Double>> createPopulation(int quantity,Factory<Genotype<DoubleGene>> factory)
     {

@@ -58,6 +58,8 @@ public class Simulation
             AgentCell a = iterator.next().getValue();
             if (!a.isAlive())
                 continue;
+            else
+                alive++;
             checkIntersection(a);
             Food f = findClosest(a);
             double[] d = a.apply(f.x, f.y);
