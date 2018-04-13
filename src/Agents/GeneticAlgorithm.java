@@ -2,14 +2,15 @@ package Agents;
 
 import Agents.utils.NeuralNetwork;
 import io.jenetics.*;
-import io.jenetics.engine.*;
+import io.jenetics.engine.Engine;
+import io.jenetics.engine.EvolutionResult;
+import io.jenetics.engine.EvolutionStart;
 import io.jenetics.util.Factory;
 import io.jenetics.util.ISeq;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class GeneticAlgorithm
 {
@@ -18,18 +19,15 @@ public class GeneticAlgorithm
     public static int generationsLimit = 5000;
     private  static Double fitnessFunc(Genotype<DoubleGene> genotype)
     {
-        return 0.0;
+
+        return Simulation.getInstance().getAgent(genotypeToDouble(genotype)).fitnessFunction();
     }
     private static double[] genotypeToDouble(Genotype<DoubleGene> genotype)
     {
         return genotype.stream().map(doubleGenes ->
-        {
-            return doubleGenes.stream()
-                    .map(gene->
-                    {
-                        return gene.getAllele();
-                    });
-        }).flatMap(doubleStream -> doubleStream).mapToDouble(value -> value).toArray();
+                doubleGenes.stream()
+                        .map(gene-> gene.getAllele())).
+                flatMap(doubleStream -> doubleStream).mapToDouble(value -> value).toArray();
     }
     public static void doEngine(int populationSize, int... neurons)
     {
@@ -50,6 +48,8 @@ public class GeneticAlgorithm
             //TODO simulation
             EvolutionResult<DoubleGene,Double> result = engine.evolve(start);
             start = result.toEvolutionStart();
+
+            Simulation.getInstance().clearAgents();
         }
         start.getPopulation().forEach(System.out::println);
     }

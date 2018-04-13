@@ -9,7 +9,7 @@ import java.awt.*;
 
 import static java.lang.Math.*;
 
-public class AgentCell extends Entity //implements Agent
+public class AgentCell extends Entity
 {
     private static final int MAX_HP = 255;
     private static final double MAX_DEGREE = PI/6;
@@ -19,12 +19,13 @@ public class AgentCell extends Entity //implements Agent
     private static final int RADIUS = 12;
     private final NeuralNetwork neuralNetwork;
     private double angle = 0;
+    private int aged = 0;
 
-    protected Double FitnessFunction()
+    protected Double fitnessFunction()
     {
-        return 0.0;
+        return (double) aged;
     }
-    protected AgentCell(int x, int y, NeuralNetwork neuralNetwork) {
+    AgentCell(int x, int y, NeuralNetwork neuralNetwork) {
         super(x, y);
         currentHP = 20;
         this.neuralNetwork = neuralNetwork;
@@ -65,6 +66,8 @@ public class AgentCell extends Entity //implements Agent
         this.currentHP += HP;
         if (currentHP > MAX_HP)
             currentHP = MAX_HP;
+        if (HP == -1)
+            aged++;
     }
     public boolean intersects(Food f)
     {
@@ -83,6 +86,10 @@ public class AgentCell extends Entity //implements Agent
         Vector2 rotation = new Vector2(cos(angle), sin(angle));
         Vector2 position = new Vector2(x - this.x, y - this.y);
         return rotation.angle(position);
+    }
+    public boolean isAlive()
+    {
+        return currentHP > 0;
     }
 
 //    @Override

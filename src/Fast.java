@@ -1,3 +1,4 @@
+import Agents.AgentCell;
 import Agents.utils.NeuralNetwork;
 import Agents.utils.Vector2;
 
@@ -6,9 +7,9 @@ import java.util.stream.Collectors;
 
 public class Fast {
     public static void main(String[] args) {
-        Vector2 vec1 = new Vector2(1,1);
-        Vector2 vec2 = new Vector2(1, 0);
-        System.out.println(vec1.angle(vec2));
+        double[] d = new double[]{2,2};
+        AgentCell agentCell;
+        System.out.println(Arrays.equals(d, d));
     }
     public static double[] getThetas()
     {
