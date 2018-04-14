@@ -20,12 +20,14 @@ public class Simulation
             instance = new Simulation();
         return instance;
     }
-    private int foodCount = 20;
+    private int foodCount = 18;
     private Map<double[],AgentCell> agentMap;
+    private AgentCell currentAgent;
     private List<Food> foods;
 
     private int iteration = 0;
-    private final Predicate<Integer> doDrawSimulation = i-> i == 0;
+    public static final int MAX_ITERATION = 2*1000;
+    private final Predicate<Integer> doDrawSimulation = i-> i%50 == 0;
 
     private Simulation()
     {
@@ -35,32 +37,39 @@ public class Simulation
             addFood();
         }
     }
-    public void doSimulation(int someNumber)
+    public double doSimulation(int someNumber, double[] array)
     {
+        Random r = new Random();
+        currentAgent =
+                new AgentCell(r.nextInt(1024), r.nextInt(1024), array);
+        iteration = 0;
         if (doDrawSimulation.test(someNumber))
             drawSimulation();
         else
             simpleSimulation();
+        return currentAgent.fitnessFunction();
     }
     public void simpleSimulation()
     {
-        int alive = agentMap.size();
-        while (alive!=0)
+        //int alive = agentMap.size();
+        boolean alive = true;
+        while (alive && iteration < MAX_ITERATION)
         {
             alive = nextStep();
         }
     }
     public void drawSimulation()
     {
-        int alive = agentMap.size();
-        Frame f = new Frame();
-        while (alive!=0)
+        //int alive = agentMap.size();
+        boolean alive = true;
+        Frame f = Frame.getInstance();
+        while (alive && iteration < MAX_ITERATION)
         {
             f.repaint();
             alive = nextStep();
             try
             {
-                Thread.sleep(50);
+                Thread.sleep(25);
             }
             catch (InterruptedException e)
             {
@@ -75,33 +84,39 @@ public class Simulation
                 new AgentCell(
                         r.nextInt(1024),
                         r.nextInt(1024),
-                        new NeuralNetwork(genotype,neurons)
+                        genotype
                 )
         );
     }
-    public int nextStep()
+    public boolean nextStep()
     {
-        int alive = 0;
-        for(Iterator<Map.Entry<double[], AgentCell>> iterator = agentMap.entrySet().iterator(); iterator.hasNext();)
-        {
-            AgentCell a = iterator.next().getValue();
-            if (!a.isAlive())
-                continue;
-            else
-                alive++;
-            checkIntersection(a);
-            Food f = findClosest(a);
-            double[] d = a.apply(f.x, f.y);
-            a.rotate(d[0]);
-            a.move();
-            if (iteration == 2)
-                a.addHP(-1);
-        }
-        if (iteration == 2)
-            iteration = 0;
-        else
-            iteration++;
-        return alive;
+//        for(Iterator<Map.Entry<double[], AgentCell>> iterator = agentMap.entrySet().iterator(); iterator.hasNext();)
+//        {
+//            AgentCell a = iterator.next().getValue();
+//            if (!a.isAlive())
+//                continue;
+//            else
+//                alive++;
+//            checkIntersection(a);
+//            Food f = findClosest(a);
+//            double[] d = a.apply(f.x, f.y);
+//            a.rotate(d[0]);
+//            a.move();
+//            if (iteration%2 == 0)
+//                a.addHP(-1);
+//        }
+        if (!currentAgent.isAlive())
+                return false;
+
+        checkIntersection(currentAgent);
+        Food f = findClosest(currentAgent);
+        currentAgent.apply(f.x, f.y);
+        //currentAgent.rotate(d[0]);
+        //currentAgent.move();
+        if (iteration%2 == 0)
+            currentAgent.addHP(-1);
+        iteration++;
+        return true;
     }
     private void checkIntersection(AgentCell a)
     {
@@ -143,11 +158,12 @@ public class Simulation
     {
         agentMap.clear();
     }
-    public AgentCell getAgent(double[] array)
+    public double getAgent(double[] array)
     {
-        return agentMap.entrySet().stream().
+        Optional<Map.Entry<double[], AgentCell>> o = agentMap.entrySet().stream().
                 filter(e->Arrays.equals(e.getKey(), array)).
-                findFirst().orElseThrow(()->new RuntimeException("Not found")).getValue();
+                findFirst();//orElseThrow(()->new RuntimeException("Not found")).getValue();
+        return o.isPresent()? o.get().getValue().fitnessFunction(): 0;
     }
     private void addFood()
     {
@@ -157,8 +173,9 @@ public class Simulation
 
     public List<Entity> getEntities() {
         List<Entity> l = new ArrayList<>();
-        List<AgentCell> list = agentMap.entrySet().stream().map(Map.Entry::getValue).filter(AgentCell::isAlive).collect(toList());
-        l.addAll(list);
+        //List<AgentCell> list = agentMap.entrySet().stream().map(Map.Entry::getValue).filter(AgentCell::isAlive).collect(toList());
+        //l.addAll(list);
+        l.add(currentAgent);
         l.addAll(foods);
         return l;
     }

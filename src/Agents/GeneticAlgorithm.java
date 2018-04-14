@@ -9,16 +9,22 @@ import io.jenetics.util.ISeq;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+
+import static Agents.AgentCell.LAYERS;
 
 public class GeneticAlgorithm
 {
-    public static int min = -10;
-    public static int max = 10;
-    public static int generationsLimit = 10;
+    public static int min = -50;
+    public static int max = 50;
+    public static int generationsLimit = 50000;
+    public static int iteration = 1;
     private  static Double fitnessFunc(Genotype<DoubleGene> genotype)
     {
-        return Simulation.getInstance().getAgent(genotypeToDouble(genotype)).fitnessFunction();
+        return Simulation.getInstance().doSimulation(iteration, genotypeToDouble(genotype));
+        //genotypeToDouble(genotype);
+        //return Simulation.getInstance().getAgent(genotypeToDouble(genotype));
     }
     private static double[] genotypeToDouble(Genotype<DoubleGene> genotype)
     {
@@ -27,54 +33,46 @@ public class GeneticAlgorithm
                         .map(gene-> gene.getAllele())).
                 flatMap(doubleStream -> doubleStream).mapToDouble(value -> value).toArray();
     }
-    public static void doEngine(int populationSize, int... neurons)
+    public static void doEngine(int populationSize)
     {
-        Engine<DoubleGene,Double> engine = Engine.builder(GeneticAlgorithm::fitnessFunc,getFactory(neurons))
-                .optimize(Optimize.MINIMUM)
+        Engine<DoubleGene,Double> engine = Engine.builder(GeneticAlgorithm::fitnessFunc,getFactory())
+                .optimize(Optimize.MAXIMUM).executor(Executors.newSingleThreadExecutor())
                 .build();
         EvolutionStart<DoubleGene,Double> start =
                 EvolutionStart.of(createPopulation(
                         populationSize,
-                        getFactory(neurons)),
+                        getFactory()),
                         1);
         for(int i = 0; i < generationsLimit; i++)
         {
-            start.getPopulation()
-                    .map(Phenotype::getGenotype)
-                    .map(GeneticAlgorithm::genotypeToDouble)
-                    .forEach(geneArray->Simulation.getInstance().addAgent(geneArray,neurons));
-            Simulation.getInstance().doSimulation(i);
+//            start.getPopulation()
+//                    .map(Phenotype::getGenotype)
+//                    .map(GeneticAlgorithm::genotypeToDouble)
+//                    .forEach(geneArray->Simulation.getInstance().addAgent(geneArray,neurons));
+            //Simulation.getInstance().doSimulation(i);
+            //System.out.println(start.getPopulation().size());
+            System.out.println("Iteration #"+iteration);
             EvolutionResult<DoubleGene,Double> result = engine.evolve(start);
             start = result.toEvolutionStart();
-
-            Simulation.getInstance().clearAgents();
+            iteration++;
+            //Simulation.getInstance().clearAgents();
         }
         start.getPopulation().forEach(System.out::println);
     }
-    public static Factory<Genotype<DoubleGene>> getFactory(int... neurons)
+    public static Factory<Genotype<DoubleGene>> getFactory()
     {
-        try
+        ArrayList<DoubleChromosome> list = new ArrayList<>(LAYERS.length);
+        for (int i = 0; i < LAYERS.length - 1; i++)
         {
-            if (neurons.length < 2)
-            {
-                throw new Exception("Ty durak ili qaq?");
-            }
-        }catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        ArrayList<DoubleChromosome> list = new ArrayList<>(neurons.length);
-        for (int i = 0; i < neurons.length - 1; i++)
-        {
-            int layerOne = neurons[i] + 1;
-            int layerTwo = neurons[i+1];
+            int layerOne = LAYERS[i] + 1;
+            int layerTwo = LAYERS[i+1];
             list.add(DoubleChromosome.of(min,max,layerOne*layerTwo));
         }
         return Genotype.of(list);
     }
     public static void main(String[] args)
     {
-        doEngine(100, 2, 6, 1);
+        doEngine(100);
 //        NeuralNetwork nn = new NeuralNetwork(genotypeToDouble(getFactory(2,2,2).newInstance()),2,2,2);
 //        System.out.println(toString(nn.getThetas(0)));
 //        System.out.println(toString(nn.getThetas(1  )));

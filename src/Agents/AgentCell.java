@@ -1,7 +1,5 @@
 package Agents;
 
-//import Agents.geneticstuff.Agent;
-//import Agents.geneticstuff.Genome;
 import Agents.utils.NeuralNetwork;
 import Agents.utils.Vector2;
 
@@ -14,6 +12,7 @@ public class AgentCell extends Entity
     private static final int MAX_HP = 255;
     private static final double MAX_DEGREE = PI/6;
     private static final double VELOCITY = 10;
+    public static final int[] LAYERS = new int[]{2, 6, 2};
 
     private int currentHP;
     private static final int RADIUS = 12;
@@ -21,14 +20,15 @@ public class AgentCell extends Entity
     private double angle = 0;
     private int aged = 0;
 
+
     protected Double fitnessFunction()
     {
         return (double) aged;
     }
-    AgentCell(int x, int y, NeuralNetwork neuralNetwork) {
+    AgentCell(int x, int y, double[] weights) {
         super(x, y);
         currentHP = 20;
-        this.neuralNetwork = neuralNetwork;
+        this.neuralNetwork = new NeuralNetwork(weights, LAYERS);
         neuralNetwork.setFunction(d-> 2d/(1+Math.exp(-d))-1);
     }
 
@@ -41,21 +41,23 @@ public class AgentCell extends Entity
         g.drawLine(x,y, x+ (int)((RADIUS+5)*cos(angle)),y+ (int)((RADIUS+5)*sin(angle))  );
         g.drawString(Integer.toString(currentHP), x,y);
     }
-    public double[] apply(double x, double y)
+    public void apply(double x, double y)
     {
         double angle = angle(x,y);
         double distance = sqrt(x*x+y*y);
-        return neuralNetwork.apply(angle, distance);
+        double[] result = neuralNetwork.apply(angle, distance);
+        this.rotate(result[0]);
+        this.move(result[1]);
     }
     public void rotate(double value)
     {
         this.angle += value*MAX_DEGREE;
         this.angle = this.angle > 2*PI? this.angle - 2*PI : this.angle < 0? this.angle + 2*PI: this.angle;
     }
-    public void move()
+    public void move(double value)
     {
-        this.x += (int)(VELOCITY*cos(angle));
-        this.y += (int)(VELOCITY*sin(angle));
+        this.x += (int)(value*VELOCITY*cos(angle));
+        this.y += (int)(value*VELOCITY*sin(angle));
     }
 
     public int getCurrentHP() {

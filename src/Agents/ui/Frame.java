@@ -3,8 +3,9 @@ package Agents.ui;
 import javax.swing.*;
 
 public class Frame {
+    private static Frame instance;
     JFrame f;
-    public Frame()
+    private Frame()
     {
         f = new JFrame();
         f.setContentPane(new Panel());
@@ -15,6 +16,12 @@ public class Frame {
     public void repaint()
     {
         f.getContentPane().repaint();
+    }
+    public static Frame getInstance()
+    {
+        if (instance == null)
+            instance = new Frame();
+        return instance;
     }
 
 }
