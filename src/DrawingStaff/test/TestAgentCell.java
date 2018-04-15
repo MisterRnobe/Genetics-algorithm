@@ -19,6 +19,7 @@ public class TestAgentCell extends Entity
     private static final double MAX_DEGREE = PI/6;
     private static final double VELOCITY = 10;
     private static final double[] ANGLES = new double[]{-PI/12, -PI/24, 0 ,PI/24, PI/12};
+    private static double VALUE = 0;
 
     private int currentHP;
     private static final int RADIUS = 12;
@@ -43,8 +44,9 @@ public class TestAgentCell extends Entity
     {
         System.out.println(toString(values));
         debug(g, values);
-        Scanner s = new Scanner(System.in);
-        this.rotate(s.nextDouble());
+        //Scanner s = new Scanner(System.in);
+        System.out.println("Value is " + VALUE);
+        this.rotate(VALUE);
         move();
     }
     public void rotate(double value)
@@ -66,19 +68,13 @@ public class TestAgentCell extends Entity
         return d < RADIUS + f.getRadius();
     }
 
-    private double angle(double x, double y)
-    {
-        Vector2 rotation = new Vector2(cos(angle), sin(angle));
-        Vector2 position = new Vector2(x - this.x, y - this.y);
-        return rotation.angle(position);
-    }
 
     private void debug(Graphics g, double[] values)
     {
         for(int i = 0; i < values.length; i++)
         {
             if (values[i] == -1)
-                continue;
+                values[i] = 1024;
             g.drawLine(x, y, x + (int)(values[i]*cos(angle+ANGLES[i])), y + (int)(values[i]*sin(angle+ANGLES[i])));
         }
     }
@@ -94,5 +90,10 @@ public class TestAgentCell extends Entity
     public static String toString(double[] d)
     {
         return Arrays.stream(d).boxed().map(Object::toString).collect(Collectors.joining(", "));
+    }
+    public static void setValue(double d)
+    {
+        VALUE = d;
+        System.out.println("Now value is "+VALUE);
     }
 }

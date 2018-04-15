@@ -34,13 +34,12 @@ public class TestSimulation
             addFood();
         }
     }
-    public void doSimulation()
+    public void doSimulation(Graphics g)
     {
-        Frame f = Frame.getInstance();
-        while (true)
-        {
-            f.repaint();
-            nextStep(f.getGraphics());
+//        while (true)
+//        {
+            nextStep(g);
+            this.getEntities().forEach(e->e.draw(g));
             try
             {
                 Thread.sleep(25);
@@ -49,14 +48,14 @@ public class TestSimulation
             {
                 e.printStackTrace();
             }
-        }
+        //}
     }
 
     public boolean nextStep(Graphics g)
     {
         checkIntersection(currentAgent);
         double[] input = getInputFor(currentAgent);
-        this.getEntities().forEach(e->e.draw(g));
+
         currentAgent.apply(input, g);
 
         return true;
@@ -82,8 +81,9 @@ public class TestSimulation
     private double[] getInputFor(TestAgentCell a)
     {
         List<Vector2> vectors = a.getDirections();
-        List<Line> lines = vectors.stream().map(vector2 -> new Line(a.getX(), a.getY(), vector2)).collect(Collectors.toList());
-        return lines.stream().mapToDouble(line -> foods.stream().map(line::intersects).filter(Objects::nonNull).
+        List<Line> lines = vectors.stream().sequential().map(vector2 -> new Line(a.getX(), a.getY(), vector2)).collect(Collectors.toList());
+        //lines.forEach(l -> System.out.println("Line: "+l.getX()+", "+l.getY()+", Vector: "+l.getVector()));
+        return lines.stream().sequential().mapToDouble(line -> foods.stream().map(line::intersects).filter(Objects::nonNull).
                 mapToDouble(Vector2::length).min().orElse(-1)).toArray();
     }
     public boolean checkCollision(Circle c, Vector2 p1, Vector2 p2)
@@ -104,7 +104,7 @@ public class TestSimulation
     }
 
     public static void main(String[] args) {
-        TestSimulation testSimulation = TestSimulation.getInstance();
-        testSimulation.doSimulation();
+        TestSimulation.getInstance();
+        Frame f = Frame.getInstance();
     }
 }
