@@ -1,5 +1,7 @@
 package Agents;
 
+import Agents.utils.Vector2;
+
 import java.awt.*;
 
 public abstract class Entity {
@@ -18,5 +20,9 @@ public abstract class Entity {
 
     public int getY() {
         return y;
+    }
+    public Vector2 getPosition()
+    {
+        return new Vector2(x,y);
     }
 }

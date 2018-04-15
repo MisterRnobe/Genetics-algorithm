@@ -58,19 +58,19 @@ public class AgentCell extends Entity
 
         if (values.length != LAYERS[0])
             throw new RuntimeException("Wrong input number!");
-        /*if (debug)
-        {
-            System.out.print("Values: ");
-            for(double d: values)
-                System.out.print(d+" ");
-            System.out.println();
-            try {
-                int a = System.in.read();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
-        lastInput = values;
+//        if (debug)
+//        {
+//            System.out.print("Values: ");
+//            for(double d: values)
+//                System.out.print(d+" ");
+//            System.out.println();
+//            try {
+//                int a = System.in.read();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        lastInput = values;
 
         //double angle = angle(x,y);
         //double distance = sqrt(x*x+y*y);

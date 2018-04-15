@@ -44,8 +44,6 @@ public class TestAgentCell extends Entity
     {
         System.out.println(toString(values));
         debug(g, values);
-        //Scanner s = new Scanner(System.in);
-        System.out.println("Value is " + VALUE);
         this.rotate(VALUE);
         move();
     }
@@ -94,6 +92,5 @@ public class TestAgentCell extends Entity
     public static void setValue(double d)
     {
         VALUE = d;
-        System.out.println("Now value is "+VALUE);
     }
 }

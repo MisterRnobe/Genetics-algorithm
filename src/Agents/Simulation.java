@@ -25,7 +25,7 @@ public class Simulation
 
     private int iteration = 0;
     public static final int MAX_ITERATION = 2*1000;
-    private final Predicate<Integer> doDrawSimulation = i-> i%7000 == 0;
+    private final Predicate<Integer> doDrawSimulation = i-> i%100 == 0;
 
     private Simulation()
     {
@@ -141,10 +141,12 @@ public class Simulation
     }
     private double[] getInputFor(AgentCell a)
     {
+        Vector2 position = a.getPosition();
         List<Vector2> vectors = a.getDirections();
-        List<Line> lines = vectors.stream().map(vector2 -> new Line(a.x, a.y, vector2)).collect(Collectors.toList());
-        return lines.stream().mapToDouble(line -> foods.stream().map(line::intersects).filter(Objects::nonNull).
-                mapToDouble(Vector2::length).min().orElse(-1)).toArray();
+        List<Line> lines = vectors.stream().sequential().map(vector2 -> new Line(a.getX(), a.getY(), vector2)).collect(Collectors.toList());
+        //lines.forEach(l -> System.out.println("Line: "+l.getX()+", "+l.getY()+", Vector: "+l.getVector()));
+        return lines.stream().sequential().mapToDouble(line -> foods.stream().map(line::intersects).filter(Objects::nonNull).
+                mapToDouble(vector -> vector.sub(position).length()).min().orElse(-1)).toArray();
     }
     public boolean checkCollision(Circle c, Vector2 p1, Vector2 p2)
     {

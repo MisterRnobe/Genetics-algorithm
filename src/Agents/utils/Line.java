@@ -26,7 +26,7 @@ public class Line {
         * {(x - x0)^2 + (y - y0)^2 = R^2
         * */
         double k = vector.getY()/vector.getX();
-        double b = k*x + y;
+        double b = -k*x + y;
         double A = 1+k*k;
         double B = 2*(k*(b-c.getY())-c.getX());
         double C = c.getX()*c.getX() + Math.pow(b-c.getY(),2) - c.getRadius()*c.getRadius();
