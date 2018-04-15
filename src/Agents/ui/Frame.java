@@ -1,6 +1,7 @@
 package Agents.ui;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class Frame {
     private static Frame instance;
@@ -16,6 +17,10 @@ public class Frame {
     public void repaint()
     {
         f.getContentPane().repaint();
+    }
+    public Graphics getGraphics()
+    {
+        return f.getContentPane().getGraphics();
     }
     public static Frame getInstance()
     {

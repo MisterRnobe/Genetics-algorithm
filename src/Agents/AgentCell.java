@@ -18,9 +18,9 @@ public class AgentCell extends Entity
     private static final int MAX_HP = 255;
     private static final double MAX_DEGREE = PI/6;
     private static final double VELOCITY = 10;
-    public static final int[] LAYERS = new int[]{3, 9, 2};
+    public static final int[] LAYERS = new int[]{5, 9, 2};
     //public static final double DELTA_ANGLE = PI/12;
-    private static final double[] ANGLES = new double[]{-PI/12, 0 , PI/12};
+    private static final double[] ANGLES = new double[]{-PI/12, -PI/24, 0 ,PI/24, PI/12};
     public static boolean debug = false;
 
     private int currentHP;
@@ -58,7 +58,7 @@ public class AgentCell extends Entity
 
         if (values.length != LAYERS[0])
             throw new RuntimeException("Wrong input number!");
-        if (debug)
+        /*if (debug)
         {
             System.out.print("Values: ");
             for(double d: values)
@@ -69,7 +69,7 @@ public class AgentCell extends Entity
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
         lastInput = values;
 
         //double angle = angle(x,y);

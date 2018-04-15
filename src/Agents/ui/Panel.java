@@ -13,7 +13,8 @@ public class Panel extends JPanel {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        Simulation.getInstance().getEntities().forEach(e->e.draw(g));
+
+        //Simulation.getInstance().getEntities().forEach(e->e.draw(g));
 
     }
 }

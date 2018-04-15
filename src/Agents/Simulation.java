@@ -1,6 +1,7 @@
 package Agents;
 
 import Agents.ui.Frame;
+import Agents.utils.Circle;
 import Agents.utils.Line;
 import Agents.utils.Vector2;
 
@@ -24,7 +25,7 @@ public class Simulation
 
     private int iteration = 0;
     public static final int MAX_ITERATION = 2*1000;
-    private final Predicate<Integer> doDrawSimulation = i-> i%200 == 0;
+    private final Predicate<Integer> doDrawSimulation = i-> i%7000 == 0;
 
     private Simulation()
     {
@@ -144,21 +145,10 @@ public class Simulation
         List<Line> lines = vectors.stream().map(vector2 -> new Line(a.x, a.y, vector2)).collect(Collectors.toList());
         return lines.stream().mapToDouble(line -> foods.stream().map(line::intersects).filter(Objects::nonNull).
                 mapToDouble(Vector2::length).min().orElse(-1)).toArray();
-//        Food food = foods.get(0);
-//        double distance = sqrt((a.x-food.x)*(a.x-food.x) + (a.y-food.y)*(a.y-food.y));
-//
-//        for(Food f: foods)
-//        {
-//            int x = a.x - f.x;
-//            int y = a.y - f.y;
-//            double d = sqrt(x*x + y*y);
-//            if (d < distance)
-//            {
-//                food = f;
-//                distance = d;
-//            }
-//        }
-//        return food;
+    }
+    public boolean checkCollision(Circle c, Vector2 p1, Vector2 p2)
+    {
+        return c.isInside(p1) && !c.isInside(p2) || !c.isInside(p1) && c.isInside(p2);
     }
     public void clearAgents()
     {

@@ -18,7 +18,7 @@ public class GeneticAlgorithm
 {
     public static int min = -50;
     public static int max = 50;
-    public static int generationsLimit = 50000;
+    public static int generationsLimit = 50002;
     public static int iteration = 1;
     private  static Double fitnessFunc(Genotype<DoubleGene> genotype)
     {
@@ -72,7 +72,7 @@ public class GeneticAlgorithm
     }
     public static void main(String[] args)
     {
-        doEngine(100);
+        doEngine(150);
 //        NeuralNetwork nn = new NeuralNetwork(genotypeToDouble(getFactory(2,2,2).newInstance()),2,2,2);
 //        System.out.println(toString(nn.getThetas(0)));
 //        System.out.println(toString(nn.getThetas(1  )));

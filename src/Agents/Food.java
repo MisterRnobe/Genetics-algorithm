@@ -9,7 +9,7 @@ public class Food extends Entity implements Circle {
     private static final int MAX_HP = 50, MIN_HP = 10;
     private final int healthPoints;
     private final int radius;
-    protected Food(int x, int y) {
+    public Food(int x, int y) {
         super(x, y);
         this.healthPoints = new Random().nextInt(MAX_HP - MIN_HP)+MIN_HP;
         radius = (int)(this.healthPoints/(float)MIN_HP * 5);
