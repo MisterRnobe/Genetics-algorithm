@@ -23,4 +23,25 @@ public class Vector2 {
     {
         return x*vec.y - y*vec.x;
     }
+    public Vector2 sub(Vector2 vec)
+    {
+        return new Vector2(x-vec.x, y - vec.y);
+    }
+    public Vector2 add(Vector2 vec)
+    {
+        return new Vector2(x + vec.x, y + vec.y);
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    @Override
+    public String toString() {
+        return "[x = "+x+", y = "+y+"]";
+    }
 }

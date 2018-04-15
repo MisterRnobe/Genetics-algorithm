@@ -1,9 +1,11 @@
 package Agents;
 
+import Agents.utils.Circle;
+
 import java.awt.*;
 import java.util.Random;
 
-public class Food extends Entity {
+public class Food extends Entity implements Circle {
     private static final int MAX_HP = 50, MIN_HP = 10;
     private final int healthPoints;
     private final int radius;

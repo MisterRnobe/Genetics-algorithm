@@ -1,15 +1,12 @@
 package Agents;
 
 import Agents.ui.Frame;
-import Agents.utils.NeuralNetwork;
-import io.jenetics.DoubleGene;
-import io.jenetics.Genotype;
+import Agents.utils.Line;
+import Agents.utils.Vector2;
 
 import java.util.*;
 import java.util.function.Predicate;
-
-import static java.lang.Math.sqrt;
-import static java.util.stream.Collectors.toList;
+import java.util.stream.Collectors;
 
 public class Simulation
 {
@@ -27,7 +24,7 @@ public class Simulation
 
     private int iteration = 0;
     public static final int MAX_ITERATION = 2*1000;
-    private final Predicate<Integer> doDrawSimulation = i-> i%50 == 0;
+    private final Predicate<Integer> doDrawSimulation = i-> i%200 == 0;
 
     private Simulation()
     {
@@ -41,7 +38,7 @@ public class Simulation
     {
         Random r = new Random();
         currentAgent =
-                new AgentCell(r.nextInt(1024), r.nextInt(1024), array);
+                new AgentCell(r.nextInt(512)+256, r.nextInt(512)+256, array);
         iteration = 0;
         if (doDrawSimulation.test(someNumber))
             drawSimulation();
@@ -63,10 +60,13 @@ public class Simulation
         //int alive = agentMap.size();
         boolean alive = true;
         Frame f = Frame.getInstance();
+        AgentCell.debug = true;
         while (alive && iteration < MAX_ITERATION)
         {
+
             f.repaint();
             alive = nextStep();
+
             try
             {
                 Thread.sleep(25);
@@ -76,6 +76,7 @@ public class Simulation
                 e.printStackTrace();
             }
         }
+        AgentCell.debug = false;
     }
     public void addAgent(double[] genotype, int... neurons)
     {
@@ -98,7 +99,7 @@ public class Simulation
 //            else
 //                alive++;
 //            checkIntersection(a);
-//            Food f = findClosest(a);
+//            Food f = getInputFor(a);
 //            double[] d = a.apply(f.x, f.y);
 //            a.rotate(d[0]);
 //            a.move();
@@ -109,8 +110,8 @@ public class Simulation
                 return false;
 
         checkIntersection(currentAgent);
-        Food f = findClosest(currentAgent);
-        currentAgent.apply(f.x, f.y);
+        double[] input = getInputFor(currentAgent);
+        currentAgent.apply(input);
         //currentAgent.rotate(d[0]);
         //currentAgent.move();
         if (iteration%2 == 0)
@@ -118,6 +119,7 @@ public class Simulation
         iteration++;
         return true;
     }
+
     private void checkIntersection(AgentCell a)
     {
         int removedNumber = 0;
@@ -136,23 +138,27 @@ public class Simulation
             addFood();
         }
     }
-    private Food findClosest(AgentCell a)
+    private double[] getInputFor(AgentCell a)
     {
-        Food food = foods.get(0);
-        double distance = sqrt((a.x-food.x)*(a.x-food.x) + (a.y-food.y)*(a.y-food.y));
-
-        for(Food f: foods)
-        {
-            int x = a.x - f.x;
-            int y = a.y - f.y;
-            double d = sqrt(x*x + y*y);
-            if (d < distance)
-            {
-                food = f;
-                distance = d;
-            }
-        }
-        return food;
+        List<Vector2> vectors = a.getDirections();
+        List<Line> lines = vectors.stream().map(vector2 -> new Line(a.x, a.y, vector2)).collect(Collectors.toList());
+        return lines.stream().mapToDouble(line -> foods.stream().map(line::intersects).filter(Objects::nonNull).
+                mapToDouble(Vector2::length).min().orElse(-1)).toArray();
+//        Food food = foods.get(0);
+//        double distance = sqrt((a.x-food.x)*(a.x-food.x) + (a.y-food.y)*(a.y-food.y));
+//
+//        for(Food f: foods)
+//        {
+//            int x = a.x - f.x;
+//            int y = a.y - f.y;
+//            double d = sqrt(x*x + y*y);
+//            if (d < distance)
+//            {
+//                food = f;
+//                distance = d;
+//            }
+//        }
+//        return food;
     }
     public void clearAgents()
     {
@@ -168,7 +174,7 @@ public class Simulation
     private void addFood()
     {
         Random r = new Random();
-        foods.add(new Food(r.nextInt(1024), r.nextInt(1025)));
+        foods.add(new Food(r.nextInt(512)+256, r.nextInt(512)+256));
     }
 
     public List<Entity> getEntities() {
