@@ -61,7 +61,6 @@ public class Simulation
         //int alive = agentMap.size();
         boolean alive = true;
         Frame f = Frame.getInstance();
-        AgentCell.debug = true;
         while (alive && iteration < MAX_ITERATION)
         {
 
@@ -77,7 +76,6 @@ public class Simulation
                 e.printStackTrace();
             }
         }
-        AgentCell.debug = false;
     }
     public void addAgent(double[] genotype, int... neurons)
     {
@@ -166,7 +164,7 @@ public class Simulation
     private void addFood()
     {
         Random r = new Random();
-        foods.add(new Food(r.nextInt(512)+256, r.nextInt(512)+256));
+        foods.add(new Food(r.nextInt(924)+50, r.nextInt(924)+50));
     }
 
     public List<Entity> getEntities() {
