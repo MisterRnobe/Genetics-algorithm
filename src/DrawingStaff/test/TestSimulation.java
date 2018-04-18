@@ -1,7 +1,7 @@
 package DrawingStaff.test;
 
+import Agents.ConsumingObject;
 import Agents.Entity;
-import Agents.Food;
 import Agents.ui.Frame;
 import Agents.utils.Circle;
 import Agents.utils.Line;
@@ -23,12 +23,12 @@ public class TestSimulation
     }
 
     private TestAgentCell currentAgent = new TestAgentCell(50,50);
-    private List<Food> foods;
+    private List<ConsumingObject> consumingObjects;
 
 
     private TestSimulation()
     {
-        foods = new ArrayList<>();
+        consumingObjects = new ArrayList<>();
         int foodCount = 19;
         for (int i = 0; i < foodCount; i++) {
             addFood();
@@ -63,10 +63,10 @@ public class TestSimulation
     private void checkIntersection(TestAgentCell a)
     {
         int removedNumber = 0;
-        Iterator<Food> iterator = foods.iterator();
+        Iterator<ConsumingObject> iterator = consumingObjects.iterator();
         for(;iterator.hasNext();)
         {
-            Food f = iterator.next();
+            ConsumingObject f = iterator.next();
             if (a.intersects(f))
             {
                 iterator.remove();
@@ -83,14 +83,14 @@ public class TestSimulation
         List<Vector2> vectors = a.getDirections();
         List<Line> lines = vectors.stream().sequential().map(vector2 -> new Line(a.getX(), a.getY(), vector2)).collect(Collectors.toList());
         //lines.forEach(l -> System.out.println("Line: "+l.getX()+", "+l.getY()+", Vector: "+l.getVector()));
-        return lines.stream().sequential().mapToDouble(line -> foods.stream().map(line::intersects).filter(Objects::nonNull).
+        return lines.stream().sequential().mapToDouble(line -> consumingObjects.stream().map(line::intersects).filter(Objects::nonNull).
                 mapToDouble(vector -> vector.sub(position).length()).min().orElse(-1)).toArray();
 //        Vector2 vector = a.getDirections().get(0);
 //        Line l = new Line(a.getX(), a.getY(), vector);
 //        Vector2 position = a.getPosition();
-//        Food min = null;
+//        ConsumingObject min = null;
 //        Vector2 minVector = null;
-//        for(Food f: foods)
+//        for(ConsumingObject f: consumingObjects)
 //        {
 //            Vector2 vec = l.intersects(f);
 //            if (vec == null)
@@ -110,13 +110,13 @@ public class TestSimulation
     private void addFood()
     {
         Random r = new Random();
-        foods.add(new Food(r.nextInt(512)+256, r.nextInt(512)+256));
+        consumingObjects.add(ConsumingObject.asFood(r.nextInt(512)+256, r.nextInt(512)+256));
     }
 
     public List<Entity> getEntities() {
         List<Entity> l = new ArrayList<>();
         l.add(currentAgent);
-        l.addAll(foods);
+        l.addAll(consumingObjects);
         return l;
     }
 

@@ -1,15 +1,13 @@
 package DrawingStaff.test;
 
+import Agents.ConsumingObject;
 import Agents.Entity;
-import Agents.Food;
-import Agents.utils.NeuralNetwork;
 import Agents.utils.Vector2;
 
 import java.awt.*;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.*;
@@ -58,7 +56,7 @@ public class TestAgentCell extends Entity
         this.y += (int)(VELOCITY*sin(angle));
     }
 
-    public boolean intersects(Food f)
+    public boolean intersects(ConsumingObject f)
     {
         int dx = f.getX() - this.x;
         int dy = f.getY() - this.y;

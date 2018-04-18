@@ -1,15 +1,20 @@
-import Agents.AgentCell;
 import Agents.utils.NeuralNetwork;
-import Agents.utils.Vector2;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 public class Fast {
     public static void main(String[] args) {
-        double[] d = new double[]{2,2};
-        AgentCell agentCell;
-        System.out.println(Arrays.equals(d, d));
+        ArrayList<Integer[]> list = new ArrayList<>();
+        list.add(new Integer[]{9,8, 7});
+        list.add(new Integer[]{4,2,6});
+        list.add(new Integer[]{5});
+        String s =  list.stream().flatMap(Arrays::stream).map(Object::toString).collect(joining(", "));
+        System.out.println(
+               s
+        );
     }
     public static double[] getThetas()
     {
@@ -18,6 +23,6 @@ public class Fast {
     }
     public static String toString(double[] d)
     {
-        return Arrays.stream(d).boxed().map(Object::toString).collect(Collectors.joining(", "));
+        return Arrays.stream(d).boxed().map(Object::toString).collect(joining(", "));
     }
 }

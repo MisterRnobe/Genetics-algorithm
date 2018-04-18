@@ -1,13 +1,13 @@
 package Agents;
 
 import Agents.ui.Frame;
-import Agents.utils.Circle;
 import Agents.utils.Line;
 import Agents.utils.Vector2;
 
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Simulation
 {
@@ -18,28 +18,32 @@ public class Simulation
             instance = new Simulation();
         return instance;
     }
-    private int foodCount = 18;
     private Map<double[],AgentCell> agentMap;
     private AgentCell currentAgent;
-    private List<Food> foods;
+    private List<ConsumingObject> consumingObjects;
 
     private int iteration = 0;
     public static final int MAX_ITERATION = 2*1000;
-    private final Predicate<Integer> doDrawSimulation = i-> i%100 == 0;
+    private final Predicate<Integer> doDrawSimulation = i-> i%500 == 0;
+    private final Random random = new Random();
 
     private Simulation()
     {
-        foods = new ArrayList<>();
+        consumingObjects = new ArrayList<>();
         agentMap = new HashMap<>();
+        int foodCount = 18;
         for (int i = 0; i < foodCount; i++) {
             addFood();
+        }
+        int poisonCount = foodCount/2;
+        for (int i = 0; i < poisonCount; i++) {
+            addPoison();
         }
     }
     public double doSimulation(int someNumber, double[] array)
     {
-        Random r = new Random();
         currentAgent =
-                new AgentCell(r.nextInt(512)+256, r.nextInt(512)+256, array);
+                new AgentCell(random.nextInt(512)+256, random.nextInt(512)+256, array);
         iteration = 0;
         if (doDrawSimulation.test(someNumber))
             drawSimulation();
@@ -79,11 +83,10 @@ public class Simulation
     }
     public void addAgent(double[] genotype, int... neurons)
     {
-        Random r = new Random();
         agentMap.put(genotype,
                 new AgentCell(
-                        r.nextInt(1024),
-                        r.nextInt(1024),
+                        random.nextInt(1024),
+                        random.nextInt(1024),
                         genotype
                 )
         );
@@ -98,7 +101,7 @@ public class Simulation
 //            else
 //                alive++;
 //            checkIntersection(a);
-//            Food f = getInputFor(a);
+//            ConsumingObject f = getInputFor(a);
 //            double[] d = a.apply(f.x, f.y);
 //            a.rotate(d[0]);
 //            a.move();
@@ -111,8 +114,6 @@ public class Simulation
         checkIntersection(currentAgent);
         double[] input = getInputFor(currentAgent);
         currentAgent.apply(input);
-        //currentAgent.rotate(d[0]);
-        //currentAgent.move();
         if (iteration%2 == 0)
             currentAgent.addHP(-1);
         iteration++;
@@ -121,20 +122,27 @@ public class Simulation
 
     private void checkIntersection(AgentCell a)
     {
-        int removedNumber = 0;
-        Iterator<Food> iterator = foods.iterator();
+        int removedFood = 0;
+        int removedPoison = 0;
+        Iterator<ConsumingObject> iterator = consumingObjects.iterator();
         for(;iterator.hasNext();)
         {
-            Food f = iterator.next();
+            ConsumingObject f = iterator.next();
             if (a.intersects(f))
             {
-                a.addHP(f.getHealthPoints());
+                a.addHP(f.getPoints());
+                if (f.getPoints()>0)
+                    removedFood++;
+                else
+                    removedPoison++;
                 iterator.remove();
-                removedNumber++;
             }
         }
-        for (int i = 0; i < removedNumber; i++) {
+        for (int i = 0; i < removedFood; i++) {
             addFood();
+        }
+        for (int i = 0; i < removedPoison; i++) {
+            addPoison();
         }
     }
     private double[] getInputFor(AgentCell a)
@@ -142,13 +150,15 @@ public class Simulation
         Vector2 position = a.getPosition();
         List<Vector2> vectors = a.getDirections();
         List<Line> lines = vectors.stream().sequential().map(vector2 -> new Line(a.getX(), a.getY(), vector2)).collect(Collectors.toList());
-        //lines.forEach(l -> System.out.println("Line: "+l.getX()+", "+l.getY()+", Vector: "+l.getVector()));
-        return lines.stream().sequential().mapToDouble(line -> foods.stream().map(line::intersects).filter(Objects::nonNull).
-                mapToDouble(vector -> vector.sub(position).length()).min().orElse(-1)).toArray();
-    }
-    public boolean checkCollision(Circle c, Vector2 p1, Vector2 p2)
-    {
-        return c.isInside(p1) && !c.isInside(p2) || !c.isInside(p1) && c.isInside(p2);
+        return lines.stream().sequential().map(
+                line -> {
+                    AbstractMap.SimpleEntry<Integer, Double> simpleEntry =consumingObjects.stream().map(o -> new AbstractMap.SimpleEntry<>(o.getCode(), line.intersects(o)))
+                            .filter(entry -> entry.getValue() != null).map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue().sub(position).length()))
+                            .min(Comparator.comparingDouble(AbstractMap.SimpleEntry::getValue))
+                            .orElse(new AbstractMap.SimpleEntry<>(0, (double) -1));
+                    return Stream.of(simpleEntry.getKey().doubleValue(), simpleEntry.getValue());
+                }
+                ).flatMapToDouble(doubleStream -> doubleStream.mapToDouble(Double::doubleValue)).toArray();
     }
     public void clearAgents()
     {
@@ -163,16 +173,17 @@ public class Simulation
     }
     private void addFood()
     {
-        Random r = new Random();
-        foods.add(new Food(r.nextInt(924)+50, r.nextInt(924)+50));
+        consumingObjects.add(ConsumingObject.asFood(random.nextInt(924)+50, random.nextInt(924)+50));
+    }
+    private void addPoison()
+    {
+        consumingObjects.add(ConsumingObject.asPoison(random.nextInt(924)+50, random.nextInt(924)+50));
     }
 
     public List<Entity> getEntities() {
         List<Entity> l = new ArrayList<>();
-        //List<AgentCell> list = agentMap.entrySet().stream().map(Map.Entry::getValue).filter(AgentCell::isAlive).collect(toList());
-        //l.addAll(list);
         l.add(currentAgent);
-        l.addAll(foods);
+        l.addAll(consumingObjects);
         return l;
     }
 }

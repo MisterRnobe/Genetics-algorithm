@@ -26,12 +26,12 @@ public class AgentCell extends Entity
     private static final double VELOCITY = 10;
     private static final int RADIUS = 12;
 
-    static final int[] LAYERS = new int[]{11, 13, 13, 2};
-    private static final double DELTA_ANGLE = PI/42;
-    private static final double[] ANGLES = new double[LAYERS[0]];
+    static final int[] LAYERS = new int[]{30, 40, 30, 2};
+    private static final double DELTA_ANGLE = PI/36;
+    private static final double[] ANGLES = new double[LAYERS[0]/2];
     static
     {
-        int countForSide = (LAYERS[0] - 1) / 2;
+        int countForSide = (LAYERS[0]/2 - 1) / 2;
         double minAngle = DELTA_ANGLE*countForSide;
         Arrays.setAll(ANGLES, i -> minAngle + i*DELTA_ANGLE);
     }
@@ -48,13 +48,13 @@ public class AgentCell extends Entity
         currentHP = 40;
         this.neuralNetwork = new NeuralNetwork(weights, LAYERS);
         neuralNetwork.setFunction(d-> 2d/(1+Math.exp(-d))-1);
-        lastValues = new double[LAYERS[0]];
+        lastValues = new double[LAYERS[0]/2];
         Arrays.fill(lastValues, -1);
     }
 
     @Override
     public void draw(Graphics g) {
-        g.setColor(new Color(currentHP, 255-currentHP, 0));
+        g.setColor(new Color(0, currentHP, 255-currentHP));
         g.fillOval(x - RADIUS, y - RADIUS, 2*RADIUS, 2*RADIUS);
         g.setColor(Color.BLACK);
         g.drawOval(x - RADIUS, y - RADIUS, 2*RADIUS, 2*RADIUS);
@@ -68,13 +68,13 @@ public class AgentCell extends Entity
     }
     public void apply(double... values)
     {
-
+        //System.out.println("Values: "+values.length+"\nInput layer "+LAYERS[0]);
         if (values.length != LAYERS[0])
             throw new RuntimeException("Wrong input number!");
         //double angle = angle(x,y);
         //double distance = sqrt(x*x+y*y);
         double[] result = neuralNetwork.apply(values);
-        lastValues = values;
+        Arrays.setAll(lastValues, i -> values[1+2*i]);
         lastAngle = angle;
         this.rotate(result[0]);
         this.move((result[1]+1)/2);
@@ -101,7 +101,7 @@ public class AgentCell extends Entity
         if (HP == -1)
             aged++;
     }
-    public boolean intersects(Food f)
+    public boolean intersects(ConsumingObject f)
     {
         int dx = f.x - this.x;
         int dy = f.y - this.y;
